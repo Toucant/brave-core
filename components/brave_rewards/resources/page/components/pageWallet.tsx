@@ -771,14 +771,13 @@ class PageWallet extends React.Component<Props, State> {
     if (!this.props.rewardsData.showOnboarding) {
       return null
     }
-    const onAddFunds = () => this.onFundsAction('add')
     const onEnable = () => this.actions.saveOnboardingResult('opted-in')
     const onClose = () => this.actions.saveOnboardingResult('dismissed')
     return (
       <RewardsOptInModal
-        onAddFunds={onAddFunds}
         onEnable={onEnable}
         onClose={onClose}
+        onTakeTour={onClose}
       />
     )
   }

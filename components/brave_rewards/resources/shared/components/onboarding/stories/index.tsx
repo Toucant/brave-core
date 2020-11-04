@@ -8,6 +8,7 @@ import { storiesOf } from '@storybook/react'
 import { LocaleContext } from '../../../lib/locale_context'
 import { WithThemeVariables } from '../../with_theme_variables'
 
+import { RewardsTourModal } from '../rewards_tour_modal'
 import { RewardsOptInModal } from '../rewards_opt_in_modal'
 import { TipOptInForm } from '../tip_opt_in_form'
 
@@ -26,8 +27,7 @@ function actionLogger (name: string) {
 }
 
 interface StoryWrapperProps {
-  width?: number
-  height?: number
+  style?: React.CSSProperties
   children: React.ReactNode
 }
 
@@ -35,7 +35,7 @@ function StoryWrapper (props: StoryWrapperProps) {
   return (
     <LocaleContext.Provider value={localeContext}>
       <WithThemeVariables>
-        <div style={{ width: props.width, height: props.height }}>
+        <div style={props.style || {}}>
           {props.children}
         </div>
       </WithThemeVariables>
@@ -44,23 +44,35 @@ function StoryWrapper (props: StoryWrapperProps) {
 }
 
 storiesOf('Rewards/Onboarding', module)
+  .add('Tour Modal', () => {
+    return (
+      <StoryWrapper>
+          <RewardsTourModal
+            onClose={actionLogger('onClose')}
+            onDone={actionLogger('onDone')}
+            rewardsEnabled={true}
+          />
+      </StoryWrapper>
+    )
+  })
   .add('Opt-in Modal', () => {
     return (
       <StoryWrapper>
         <RewardsOptInModal
           onEnable={actionLogger('onEnable')}
           onClose={actionLogger('onClose')}
-          onAddFunds={actionLogger('onAddFunds')}
+          onTakeTour={actionLogger('onTakeTour')}
         />
       </StoryWrapper>
     )
   })
   .add('Tip Opt-in', () => {
     return (
-      <StoryWrapper width={363} height={404}>
+      <StoryWrapper style={{ width: '363px', height: '404px' }}>
         <TipOptInForm
           onEnable={actionLogger('onEnable')}
           onDismiss={actionLogger('onDismiss')}
+          onTakeTour={actionLogger('onTakeTour')}
         />
       </StoryWrapper>
     )
