@@ -3,9 +3,11 @@
  * License, v. 3.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef BRAVE_BROWSER_ANDROID_BRAVE_COSMETIC_RESOURCES_TAB_HELPER_H_
-#define BRAVE_BROWSER_ANDROID_BRAVE_COSMETIC_RESOURCES_TAB_HELPER_H_
+#ifndef BRAVE_BROWSER_BRAVE_COSMETIC_RESOURCES_TAB_HELPER_H_
+#define BRAVE_BROWSER_BRAVE_COSMETIC_RESOURCES_TAB_HELPER_H_
 
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -68,4 +70,4 @@ class BraveCosmeticResourcesTabHelper
   DISALLOW_COPY_AND_ASSIGN(BraveCosmeticResourcesTabHelper);
 };
 
-#endif  // BRAVE_BROWSER_ANDROID_BRAVE_COSMETIC_RESOURCES_TAB_HELPER_H_
+#endif  // BRAVE_BROWSER_BRAVE_COSMETIC_RESOURCES_TAB_HELPER_H_
