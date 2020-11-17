@@ -1,0 +1,15 @@
+diff --git a/components/component_updater/component_updater_service.cc b/components/component_updater/component_updater_service.cc
+index 49ce676e11a53eaae623b874f0d1b23415bc93a9..545b5067a2a225d43fa8e46ef506f6fba88e07f1 100644
+--- a/components/component_updater/component_updater_service.cc
++++ b/components/component_updater/component_updater_service.cc
+@@ -475,8 +475,8 @@ std::unique_ptr<ComponentUpdateService> ComponentUpdateServiceFactory(
+   DCHECK(config);
+   DCHECK(scheduler);
+   auto update_client = update_client::UpdateClientFactory(config);
+-  return std::make_unique<CrxUpdateService>(config, std::move(scheduler),
+-                                            std::move(update_client));
++  return std::make_unique<BraveCrxUpdateService>(config, std::move(scheduler),
++                                                 std::move(update_client));
+ }
+ 
+ }  // namespace component_updater
