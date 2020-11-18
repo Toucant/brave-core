@@ -3,19 +3,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#define CheckForUpdates CheckForUpdates_ChromiumImpl
 #include "../../../../components/component_updater/component_updater_service.cc"
+#undef CheckForUpdates
 
 namespace component_updater {
 
-BraveCrxUpdateService::BraveCrxUpdateService(
-  scoped_refptr<Configurator> config,
-  std::unique_ptr<UpdateScheduler> scheduler,
-  scoped_refptr<UpdateClient> update_client)
-  : CrxUpdateService(config, std::move(scheduler), std::move(update_client)) {}
-
-bool BraveCrxUpdateService::CheckForUpdates(
+bool CrxUpdateService::CheckForUpdates(
   UpdateScheduler::OnFinishedCallback on_finished) {
-  /* We override CrxUpdateService::CheckForUpdates for the following reason:
+  /* We overwrite CrxUpdateService::CheckForUpdates for the following reason:
    * Google's ToS do not allow distributing all components. In particular, the
    * Widevine plugin must be fetched from Google servers. Brave's update server
    * for components handles this as follows: When an update for a Google

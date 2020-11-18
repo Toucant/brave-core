@@ -6,20 +6,12 @@
 #ifndef BRAVE_CHROMIUM_SRC_COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_SERVICE_INTERNAL_H_
 #define BRAVE_CHROMIUM_SRC_COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_SERVICE_INTERNAL_H_
 
+#define CheckForUpdates    \
+  CheckForUpdates_ChromiumImpl(UpdateScheduler::OnFinishedCallback on_finished); \
+  bool CheckForUpdates
+
 #include "../../../../components/component_updater/component_updater_service_internal.h"
 
-namespace component_updater {
-
-class BraveCrxUpdateService : public CrxUpdateService {
- public:
-  BraveCrxUpdateService(scoped_refptr<Configurator> config,
-                        std::unique_ptr<UpdateScheduler> scheduler,
-                        scoped_refptr<UpdateClient> update_client);
- private:
-  bool CheckForUpdates(
-      UpdateScheduler::OnFinishedCallback on_finished) override;
-};
-
-}  // namespace component_updater
+#undef CheckForUpdates
 
 #endif  // BRAVE_CHROMIUM_SRC_COMPONENTS_COMPONENT_UPDATER_COMPONENT_UPDATER_SERVICE_INTERNAL_H_
