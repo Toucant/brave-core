@@ -4,6 +4,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "components/component_updater/component_updater_service.h"
+#include "components/component_updater/component_updater_service_internal.h"
 
 #define CheckForUpdates CheckForUpdates_ChromiumImpl
 #include "../../../../components/component_updater/component_updater_service.cc"
