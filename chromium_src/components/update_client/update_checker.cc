@@ -53,10 +53,10 @@ class SequentialUpdateChecker : public UpdateChecker {
   const scoped_refptr<Configurator> config_;
   PersistedData* metadata_ = nullptr;
 
-  const std::string& session_id_;
-  const std::vector<std::string>& ids_checked_;
-  const IdToComponentPtrMap& components_;
-  const base::flat_map<std::string, std::string>& additional_attributes_;
+  std::string session_id_;
+  std::vector<std::string> ids_checked_;
+  IdToComponentPtrMap components_;
+  base::flat_map<std::string, std::string> additional_attributes_;
   bool enabled_component_updates_;
   UpdateCheckCallback update_check_callback_;
 
