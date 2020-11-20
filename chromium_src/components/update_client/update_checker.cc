@@ -41,8 +41,8 @@ class SequentialUpdateChecker : public UpdateChecker {
       UpdateCheckCallback update_check_callback) override;
 
  private:
-  void SequentialUpdateChecker::Check(size_t id);
-  void SequentialUpdateChecker::CheckNext(
+  void Check(size_t id);
+  void CheckNext(
       const base::Optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
       int error,
@@ -52,10 +52,15 @@ class SequentialUpdateChecker : public UpdateChecker {
 
   const scoped_refptr<Configurator> config_;
   PersistedData* metadata_ = nullptr;
-  std::vector<std::string> ids_checked_;
-  size_t curr_id_ = 0;
 
+  const std::string& session_id_;
+  const std::vector<std::string>& ids_checked_;
+  const IdToComponentPtrMap& components_;
+  const base::flat_map<std::string, std::string>& additional_attributes_;
+  bool enabled_component_updates_;
   UpdateCheckCallback update_check_callback_;
+
+  size_t curr_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(SequentialUpdateChecker);
 };
@@ -79,7 +84,11 @@ void SequentialUpdateChecker::CheckForUpdates(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!ids_checked.empty());
 
+  session_id_ = session_id;
   ids_checked_ = ids_checked;
+  components_ = components;
+  additional_attributes_ = additional_attributes;
+  enabled_component_updates_ = enabled_component_updates;
   update_check_callback_ = std::move(update_check_callback);
 
   Check(0);
@@ -87,9 +96,10 @@ void SequentialUpdateChecker::CheckForUpdates(
 
 void SequentialUpdateChecker::Check(size_t id) {
   Create_ChromiumImpl(config_, metadata_)->CheckForUpdates(
-      session_id, ids_checked[id], components, additional_attributes,
-      enabled_component_updates,
-      base::BindOnce(&SequentialUpdateChecker::CheckNext, this));
+      session_id_, ids_checked_[id], components_, additional_attributes_,
+      enabled_component_updates_,
+      base::BindOnce(&SequentialUpdateChecker::CheckNext,
+                     base::Unretained(this)));
 }
 
 void SequentialUpdateChecker::CheckNext(
@@ -104,7 +114,11 @@ void SequentialUpdateChecker::CheckNext(
   bool done = error || curr_id_ >= ids_checked_.size();
 
   if (done)
-    update_check_callback_(results, error_category, error, retry_after_sec);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(update_check_callback_),
+                     base::make_optional<ProtocolParser::Results>(results),
+                     error_category, error, retry_after_sec));
   else
     Check(curr_id_);
 }
