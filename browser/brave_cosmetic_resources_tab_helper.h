@@ -21,6 +21,8 @@ class BraveCosmeticResourcesTabHelper
       public content::WebContentsUserData<BraveCosmeticResourcesTabHelper>,
       public base::SupportsWeakPtr<BraveCosmeticResourcesTabHelper> {
  public:
+  static std::string* observing_script_;
+
   explicit BraveCosmeticResourcesTabHelper(content::WebContents* contents);
   ~BraveCosmeticResourcesTabHelper() override;
 
