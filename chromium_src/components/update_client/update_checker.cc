@@ -95,6 +95,7 @@ void SequentialUpdateChecker::CheckForUpdates(
 }
 
 void SequentialUpdateChecker::Check(size_t id) {
+  VLOG(3) << "Checking for an update to component " << ids_checked_[id];
   Create_ChromiumImpl(config_, metadata_)->CheckForUpdates(
       session_id_, ids_checked_[id], components_, additional_attributes_,
       enabled_component_updates_,
