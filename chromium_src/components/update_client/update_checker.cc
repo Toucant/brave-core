@@ -41,7 +41,7 @@ class SequentialUpdateChecker : public UpdateChecker {
       UpdateCheckCallback update_check_callback) override;
 
  private:
-  void Check(size_t id);
+  void Check(size_t id_index);
   void CheckNext(
       const base::Optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
@@ -94,10 +94,12 @@ void SequentialUpdateChecker::CheckForUpdates(
   Check(0);
 }
 
-void SequentialUpdateChecker::Check(size_t id) {
-  VLOG(3) << "Checking for an update to component " << ids_checked_[id];
+void SequentialUpdateChecker::Check(size_t id_index) {
+  std::string id = ids_checked_[id_index];
+  VLOG(3) << "Checking for an update to component " << id;
+  std::vector<std::string> id_vector = {id};
   Create_ChromiumImpl(config_, metadata_)->CheckForUpdates(
-      session_id_, ids_checked_[id], components_, additional_attributes_,
+      session_id_, id_vector, components_, additional_attributes_,
       enabled_component_updates_,
       base::BindOnce(&SequentialUpdateChecker::CheckNext,
                      base::Unretained(this)));
