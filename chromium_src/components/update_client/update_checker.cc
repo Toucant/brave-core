@@ -90,7 +90,7 @@ class SequentialUpdateChecker : public UpdateChecker {
 
   std::string session_id_;
   std::vector<std::string> ids_checked_;
-  IdToComponentPtrMap* components_;
+  const IdToComponentPtrMap* components_;
   base::flat_map<std::string, std::string> additional_attributes_;
   bool enabled_component_updates_;
   UpdateCheckCallback update_check_callback_;
