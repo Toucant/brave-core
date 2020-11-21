@@ -90,7 +90,7 @@ class SequentialUpdateChecker : public UpdateChecker {
 
   std::string session_id_;
   std::vector<std::string> ids_checked_;
-  IdToComponentPtrMap components_;
+  IdToComponentPtrMap* components_;
   base::flat_map<std::string, std::string> additional_attributes_;
   bool enabled_component_updates_;
   UpdateCheckCallback update_check_callback_;
@@ -121,7 +121,7 @@ void SequentialUpdateChecker::CheckForUpdates(
 
   session_id_ = session_id;
   ids_checked_ = ids_checked;
-  components_ = std::cref(components);
+  components_ = &components;
   additional_attributes_ = additional_attributes;
   enabled_component_updates_ = enabled_component_updates;
   update_check_callback_ = std::move(update_check_callback);
@@ -134,7 +134,7 @@ void SequentialUpdateChecker::Check(size_t id_index) {
   VLOG(3) << "Checking for an update to component " << id;
   std::vector<std::string> id_vector = {id};
   Create_ChromiumImpl(config_, metadata_)->CheckForUpdates(
-      session_id_, id_vector, components_, additional_attributes_,
+      session_id_, id_vector, *components_, additional_attributes_,
       enabled_component_updates_,
       base::BindOnce(&SequentialUpdateChecker::CheckNext,
                      base::Unretained(this)));
