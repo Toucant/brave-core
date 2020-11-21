@@ -155,8 +155,7 @@ void SequentialUpdateChecker::CheckNext(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(update_check_callback_),
-                     base::make_optional<ProtocolParser::Results>(results),
-                     error_category, error, retry_after_sec));
+                     results, error_category, error, retry_after_sec));
   else
     Check(curr_id_);
 }
