@@ -3,7 +3,42 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// Repeat all inclueds from update_checker.cc to make sure our `Create` below
+// doesn't replace a declaration in an included file.
+
 #include "components/update_client/update_checker.h"
+
+#include <stddef.h>
+
+#include <algorithm>
+#include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/location.h"
+#include "base/logging.h"
+#include "base/macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/thread_checker.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
+#include "components/update_client/component.h"
+#include "components/update_client/configurator.h"
+#include "components/update_client/persisted_data.h"
+#include "components/update_client/protocol_definition.h"
+#include "components/update_client/protocol_handler.h"
+#include "components/update_client/protocol_serializer.h"
+#include "components/update_client/request_sender.h"
+#include "components/update_client/task_traits.h"
+#include "components/update_client/update_client.h"
+#include "components/update_client/updater_state.h"
+#include "components/update_client/utils.h"
+#include "url/gurl.h"
 
 #define Create Create_ChromiumImpl
 #include "../../../../components/update_client/update_checker.cc"
