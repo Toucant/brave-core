@@ -121,7 +121,7 @@ void SequentialUpdateChecker::CheckForUpdates(
 
   session_id_ = session_id;
   ids_checked_ = ids_checked;
-  components_ = components;
+  components_ = std::cref(components);
   additional_attributes_ = additional_attributes;
   enabled_component_updates_ = enabled_component_updates;
   update_check_callback_ = std::move(update_check_callback);
