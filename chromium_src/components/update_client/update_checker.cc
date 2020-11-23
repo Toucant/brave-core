@@ -98,6 +98,7 @@ class SequentialUpdateChecker : public UpdateChecker {
   size_t curr_id_ = 0;
 
   std::unique_ptr<UpdateChecker> update_checker_;
+  ProtocolParser::Results results_;
 
   DISALLOW_COPY_AND_ASSIGN(SequentialUpdateChecker);
 };
@@ -162,6 +163,12 @@ void SequentialUpdateChecker::CheckNext(
   VLOG(3) << "< CheckNext(" << error << ")";
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  if (!error) {
+    DCHECK(results);
+    for (const auto& result : results->list)
+      results_.list.push_back(result)
+  }
+
   ++curr_id_;
 
   bool done = error || curr_id_ >= ids_checked_.size();
@@ -170,7 +177,9 @@ void SequentialUpdateChecker::CheckNext(
     base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(update_check_callback_),
-                     results, error_category, error, retry_after_sec));
+                     error ? base::nullopt :
+                     base::make_optional<ProtocolParser::Results>(results_),
+                     error_category, error, retry_after_sec));
   else
     Check(curr_id_);
   VLOG(3) << "> CheckNext(" << error << ")";
