@@ -38,10 +38,9 @@ class BraveBrowsingDataRemoverDelegateTest : public testing::Test {
 
   int GetShieldsSettingsCount() {
     int shields_settings_count = 0;
-    for (const auto& resource_id : content_settings::GetShieldsResourceIDs()) {
+    for (const auto& content_type : content_settings::GetShieldsContentSettingsTypes()) {
       ContentSettingsForOneType settings;
-      ContentSettingsType content_type = ContentSettingsType::PLUGINS;
-      map()->GetSettingsForOneType(content_type, resource_id, &settings);
+      map()->GetSettingsForOneType(content_type, &settings);
       shields_settings_count += settings.size();
     }
     return shields_settings_count;

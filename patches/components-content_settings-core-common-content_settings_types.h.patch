@@ -1,0 +1,24 @@
+diff --git a/components/content_settings/core/common/content_settings_types.h b/components/content_settings/core/common/content_settings_types.h
+index 27dbaba5b91bcbfac4b50892919e92728def2380..01f6ed2fd5113470a9dd5cb5850f8a258aae8738 100644
+--- a/components/content_settings/core/common/content_settings_types.h
++++ b/components/content_settings/core/common/content_settings_types.h
+@@ -229,6 +229,19 @@ enum class ContentSettingsType : int32_t {
+   // by the File System Access API.
+   FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+ 
++  BRAVE_ADS,
++  BRAVE_COSMETIC_FILTERING,
++  BRAVE_TRACKERS,
++  BRAVE_HTTP_UPGRADABLE_RESOURCES,
++  BRAVE_JAVASCRIPT,
++  BRAVE_FINGERPRINTING_V2,
++  BRAVE_SHIELDS,
++  BRAVE_REFERRERS,
++  BRAVE_COOKIES,
++  BRAVE_FACEBOOK_EMBEDS,
++  BRAVE_TWITTER_EMBEDS,
++  BRAVE_LINKEDIN_EMBEDS,
++
+   NUM_TYPES,
+ };
+ 
