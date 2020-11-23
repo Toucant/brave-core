@@ -30,13 +30,6 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
-#include <string>
-
-#include "brave/browser/brave_browser_process_impl.h"
-#include "brave/browser/widevine/brave_widevine_bundle_manager.h"
-#endif
-
 namespace {
 class TestObserver : public permissions::PermissionRequestManager::Observer {
  public:
@@ -171,33 +164,6 @@ IN_PROC_BROWSER_TEST_F(WidevinePermissionRequestBrowserTest,
   drm_tab_helper->OnWidevineKeySystemAccessRequest();
   content::RunAllTasksUntilIdle();
   EXPECT_FALSE(observer.bubble_added_);
-}
-#endif
-
-#if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
-// For bundling, PermissionRequest for browser restart is added after finishing
-// installis done. Check seconds permission request is also added.
-IN_PROC_BROWSER_TEST_F(WidevinePermissionRequestBrowserTest,
-                       TriggerTwoPermissionTest) {
-  auto* bundle_manager =
-      g_brave_browser_process->brave_widevine_bundle_manager();
-  bundle_manager->startup_checked_ = true;
-  bundle_manager->is_test_ = true;
-
-  TestObserver observer;
-  auto* permission_request_manager = GetPermissionRequestManager();
-  permission_request_manager->AddObserver(&observer);
-  permission_request_manager->set_auto_response_for_test(
-      permissions::PermissionRequestManager::ACCEPT_ALL);
-
-  GetBraveDrmTabHelper()->OnWidevineKeySystemAccessRequest();
-  content::RunAllTasksUntilIdle();
-  bundle_manager->InstallDone(std::string());
-  content::RunAllTasksUntilIdle();
-
-  // Check two permission bubble are created.
-  EXPECT_EQ(2, observer.added_count_);
-  permission_request_manager->RemoveObserver(&observer);
 }
 #endif
 
