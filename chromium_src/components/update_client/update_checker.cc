@@ -121,6 +121,9 @@ void SequentialUpdateChecker::CheckForUpdates(
     bool enabled_component_updates,
     UpdateCheckCallback update_check_callback) {
   VLOG(3) << "> CheckForUpdates";
+  for (const auto& app_id : ids_checked) {
+    VLOG(3) << ">  * " << app_id;
+  }
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!ids_checked.empty());
 
