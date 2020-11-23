@@ -3,6 +3,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "components/update_client/update_client.h"
+
 #define UpdateClientFactory UpdateClientFactory_ChromiumImpl
 #include "../../../../components/update_client/update_client.cc"
 #undef UpdateClientFactory
