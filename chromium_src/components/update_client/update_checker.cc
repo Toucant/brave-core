@@ -103,10 +103,14 @@ class SequentialUpdateChecker : public UpdateChecker {
 SequentialUpdateChecker::SequentialUpdateChecker(
     scoped_refptr<Configurator> config,
     PersistedData* metadata)
-    : config_(config), metadata_(metadata) {}
+    : config_(config), metadata_(metadata) {
+      VLOG(3) << "SequentialUpdateChecker";
+    }
 
 SequentialUpdateChecker::~SequentialUpdateChecker() {
+    VLOG(3) << "> ~SequentialUpdateChecker";
     DCHECK(thread_checker_.CalledOnValidThread());
+    VLOG(3) << "< ~SequentialUpdateChecker";
 }
 
 void SequentialUpdateChecker::CheckForUpdates(
@@ -116,6 +120,7 @@ void SequentialUpdateChecker::CheckForUpdates(
     const base::flat_map<std::string, std::string>& additional_attributes,
     bool enabled_component_updates,
     UpdateCheckCallback update_check_callback) {
+  VLOG(3) << "> CheckForUpdates";
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!ids_checked.empty());
 
@@ -127,17 +132,19 @@ void SequentialUpdateChecker::CheckForUpdates(
   update_check_callback_ = std::move(update_check_callback);
 
   Check(0);
+  VLOG(3) << "< CheckForUpdates";
 }
 
 void SequentialUpdateChecker::Check(size_t id_index) {
+  VLOG(3) << "> Check(" << id_index << ")";
   std::string id = ids_checked_[id_index];
-  VLOG(3) << "Checking for an update to component " << id;
   std::vector<std::string> id_vector = {id};
   Create_ChromiumImpl(config_, metadata_)->CheckForUpdates(
       session_id_, id_vector, *components_, additional_attributes_,
       enabled_component_updates_,
       base::BindOnce(&SequentialUpdateChecker::CheckNext,
                      base::Unretained(this)));
+  VLOG(3) << "< Check(" << id_index << ")";
 }
 
 void SequentialUpdateChecker::CheckNext(
@@ -145,6 +152,7 @@ void SequentialUpdateChecker::CheckNext(
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
+  VLOG(3) << "< CheckNext(" << error << ")";
   DCHECK(thread_checker_.CalledOnValidThread());
 
   ++curr_id_;
@@ -158,6 +166,7 @@ void SequentialUpdateChecker::CheckNext(
                      results, error_category, error, retry_after_sec));
   else
     Check(curr_id_);
+  VLOG(3) << "> CheckNext(" << error << ")";
 }
 
 }  // namespace
@@ -165,6 +174,7 @@ void SequentialUpdateChecker::CheckNext(
 std::unique_ptr<UpdateChecker> UpdateChecker::Create(
     scoped_refptr<Configurator> config,
     PersistedData* persistent) {
+  VLOG(3) << "Create";
   return std::make_unique<SequentialUpdateChecker>(config, persistent);
 }
 
