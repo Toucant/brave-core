@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <functional>
+#include <iostream>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -124,6 +125,7 @@ void RefillUnblindedTokens::OnRequestSignedTokens(
 
   if (url_response.status_code != net::HTTP_CREATED) {
     BLOG(1, "Failed to request signed tokens");
+    std::cout << "FOOBAR.1" << std::endl;
     OnRefill(FAILED);
     return;
   }
@@ -133,6 +135,7 @@ void RefillUnblindedTokens::OnRequestSignedTokens(
       base::JSONReader::Read(url_response.body);
   if (!dictionary || !dictionary->is_dict()) {
     BLOG(3, "Failed to parse response: " << url_response.body);
+    std::cout << "FOOBAR.2" << std::endl;
     OnRefill(FAILED, false);
     return;
   }
@@ -141,6 +144,7 @@ void RefillUnblindedTokens::OnRequestSignedTokens(
   const std::string* nonce = dictionary->FindStringKey("nonce");
   if (!nonce) {
     BLOG(0, "Response is missing nonce");
+    std::cout << "FOOBAR.3" << std::endl;
     OnRefill(FAILED, false);
     return;
   }
@@ -173,6 +177,7 @@ void RefillUnblindedTokens::OnGetSignedTokens(
 
   if (url_response.status_code != net::HTTP_OK) {
     BLOG(0, "Failed to get signed tokens");
+    std::cout << "FOOBAR.4" << std::endl;
     OnRefill(FAILED);
     return;
   }
@@ -182,6 +187,7 @@ void RefillUnblindedTokens::OnGetSignedTokens(
       base::JSONReader::Read(url_response.body);
   if (!dictionary || !dictionary->is_dict()) {
     BLOG(3, "Failed to parse response: " << url_response.body);
+    std::cout << "FOOBAR.5" << std::endl;
     OnRefill(FAILED, false);
     return;
   }
@@ -190,6 +196,7 @@ void RefillUnblindedTokens::OnGetSignedTokens(
   const std::string* public_key_base64 = dictionary->FindStringKey("publicKey");
   if (!public_key_base64) {
     BLOG(0, "Response is missing publicKey");
+    std::cout << "FOOBAR.6" << std::endl;
     OnRefill(FAILED, false);
     return;
   }
@@ -199,6 +206,7 @@ void RefillUnblindedTokens::OnGetSignedTokens(
   if (*public_key_base64 != public_key_) {
     BLOG(0, "Response public key " << *public_key_base64 << " does not match "
         "catalog issuers public key " << public_key_);
+    std::cout << "FOOBAR.7" << std::endl;
     OnRefill(FAILED, false);
     return;
   }
@@ -208,6 +216,7 @@ void RefillUnblindedTokens::OnGetSignedTokens(
       dictionary->FindStringKey("batchProof");
   if (!batch_proof_base64) {
     BLOG(0, "Response is missing batchProof");
+    std::cout << "FOOBAR.8" << std::endl;
     OnRefill(FAILED, false);
     return;
   }
@@ -220,6 +229,7 @@ void RefillUnblindedTokens::OnGetSignedTokens(
       dictionary->FindListKey("signedTokens");
   if (!signed_tokens_list) {
     BLOG(0, "Response is missing signedTokens");
+    std::cout << "FOOBAR.9" << std::endl;
     OnRefill(FAILED, false);
     return;
   }
@@ -244,6 +254,7 @@ void RefillUnblindedTokens::OnGetSignedTokens(
     BLOG(1, "  Public key: " << public_key_);
 
     OnRefill(FAILED, false);
+    std::cout << "FOOBAR.A" << std::endl;
     return;
   }
 
@@ -265,6 +276,8 @@ void RefillUnblindedTokens::OnGetSignedTokens(
   BLOG(1, "Added " << unblinded_tokens.size() << " unblinded tokens, you now "
       "have " << ConfirmationsState::Get()->get_unblinded_tokens()->Count()
           << " unblinded tokens");
+
+  std::cout << "FOOBAR.B" << std::endl;
 
   OnRefill(SUCCESS, false);
 }
