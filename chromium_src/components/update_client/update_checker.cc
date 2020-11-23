@@ -166,7 +166,7 @@ void SequentialUpdateChecker::CheckNext(
   if (!error) {
     DCHECK(results);
     for (const auto& result : results->list)
-      results_.list.push_back(result)
+      results_.list.push_back(result);
   }
 
   ++curr_id_;
