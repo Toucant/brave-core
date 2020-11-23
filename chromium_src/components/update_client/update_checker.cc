@@ -97,6 +97,8 @@ class SequentialUpdateChecker : public UpdateChecker {
 
   size_t curr_id_ = 0;
 
+  std::unique_ptr<UpdateChecker> update_checker_;
+
   DISALLOW_COPY_AND_ASSIGN(SequentialUpdateChecker);
 };
 
@@ -142,7 +144,9 @@ void SequentialUpdateChecker::Check(size_t id_index) {
   VLOG(3) << "> Check(" << id_index << ")";
   std::string id = ids_checked_[id_index];
   std::vector<std::string> id_vector = {id};
-  Create_ChromiumImpl(config_, metadata_)->CheckForUpdates(
+
+  update_checker_ = Create_ChromiumImpl(config_, metadata_);
+  update_checker_->CheckForUpdates(
       session_id_, id_vector, *components_, additional_attributes_,
       enabled_component_updates_,
       base::BindOnce(&SequentialUpdateChecker::CheckNext,
@@ -178,7 +182,7 @@ std::unique_ptr<UpdateChecker> UpdateChecker::Create(
     scoped_refptr<Configurator> config,
     PersistedData* persistent) {
   VLOG(3) << "Create";
-  return std::make_unique<UpdateCheckerImpl>(config, persistent);
+  return std::make_unique<SequentialUpdateChecker>(config, persistent);
 }
 
 }  // namespace update_client
