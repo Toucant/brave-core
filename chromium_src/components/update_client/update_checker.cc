@@ -44,6 +44,8 @@
 #include "../../../../components/update_client/update_checker.cc"
 #undef Create
 
+#include <deque>
+
 namespace update_client {
 
 namespace {
