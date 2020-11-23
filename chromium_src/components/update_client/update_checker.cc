@@ -178,7 +178,7 @@ std::unique_ptr<UpdateChecker> UpdateChecker::Create(
     scoped_refptr<Configurator> config,
     PersistedData* persistent) {
   VLOG(3) << "Create";
-  return std::make_unique<UpdateChecker>(config, persistent);
+  return std::make_unique<UpdateCheckerImpl>(config, persistent);
 }
 
 }  // namespace update_client
