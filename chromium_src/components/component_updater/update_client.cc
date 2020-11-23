@@ -7,10 +7,13 @@
 #include "../../../../components/update_client/update_client.cc"
 #undef UpdateClientFactory
 
+#include "base/logging.h"
+
 namespace update_client {
 
 scoped_refptr<UpdateClient> UpdateClientFactory(
     scoped_refptr<Configurator> config) {
+  VLOG(3) << "Brave UpdateClientFactory called";
   return base::MakeRefCounted<UpdateClientImpl>(
       config, base::MakeRefCounted<PingManager>(config),
       &SequentialUpdateChecker::Create);
