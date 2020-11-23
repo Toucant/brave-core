@@ -7,8 +7,6 @@
 
 namespace update_client {
 
-namespace {
-
 SequentialUpdateChecker::SequentialUpdateChecker(
     scoped_refptr<Configurator> config,
     PersistedData* metadata)
@@ -91,8 +89,6 @@ void SequentialUpdateChecker::UpdateResultAvailable(
     CheckNext();
   VLOG(3) << "> UpdateResultAvailable(" << error << ")";
 }
-
-}  // namespace
 
 std::unique_ptr<UpdateChecker> SequentialUpdateChecker::Create(
     scoped_refptr<Configurator> config,
