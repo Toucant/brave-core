@@ -76,8 +76,8 @@ class SequentialUpdateChecker : public UpdateChecker {
       UpdateCheckCallback update_check_callback) override;
 
  private:
-  void Check(size_t id_index);
-  void CheckNext(
+  void CheckNext();
+  void UpdateResultAvailable(
       const base::Optional<ProtocolParser::Results>& results,
       ErrorCategory error_category,
       int error,
@@ -91,7 +91,6 @@ class SequentialUpdateChecker : public UpdateChecker {
   // Store the parameters to CheckForUpdates(...), so we can pass them multiple
   // times to the original UpdateChecker implementation.
   std::string session_id_;
-  std::vector<std::string> ids_checked_;
   // Needs to be a pointer because the values in IdToComponentPtrMap are of
   // type std::unique_ptr, which we can't copy. Furthermore, it is okay to keep
   // this pointer because IdToComponentPtrMap resides in in UpdateContext, which
@@ -101,9 +100,12 @@ class SequentialUpdateChecker : public UpdateChecker {
   bool enabled_component_updates_;
   UpdateCheckCallback update_check_callback_;
 
-  size_t curr_id_ = 0;
+  std::deque remaining_ids_;
 
+  // The currently running update_checker_. We keep a smart pointer to it to
+  // keep it alive while this particular sequential update check takes place.
   std::unique_ptr<UpdateChecker> update_checker_;
+  // Aggregates results from all sequential update requests.
   ProtocolParser::Results results_;
 
   DISALLOW_COPY_AND_ASSIGN(SequentialUpdateChecker);
@@ -130,43 +132,45 @@ void SequentialUpdateChecker::CheckForUpdates(
     bool enabled_component_updates,
     UpdateCheckCallback update_check_callback) {
   VLOG(3) << "> CheckForUpdates";
-  for (const auto& app_id : ids_checked) {
-    VLOG(3) << ">  * " << app_id;
-  }
+
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!ids_checked.empty());
 
+  for (const auto& app_id : ids_checked) {
+    VLOG(3) << ">  * " << app_id;
+    remaining_ids_.push_back(app_id);
+  }
+
   session_id_ = session_id;
-  ids_checked_ = ids_checked;
   components_ = &components;
   additional_attributes_ = additional_attributes;
   enabled_component_updates_ = enabled_component_updates;
   update_check_callback_ = std::move(update_check_callback);
 
-  Check(0);
   VLOG(3) << "< CheckForUpdates";
 }
 
-void SequentialUpdateChecker::Check(size_t id_index) {
-  VLOG(3) << "> Check(" << id_index << ")";
-  std::string id = ids_checked_[id_index];
+void SequentialUpdateChecker::CheckNext() {
+  VLOG(3) << "> CheckNext()";
+  DCHECK(!remaining_ids_.empty());
+  std::string id = remaining_ids_.pop_front();
   std::vector<std::string> id_vector = {id};
 
   update_checker_ = Create_ChromiumImpl(config_, metadata_);
   update_checker_->CheckForUpdates(
       session_id_, id_vector, *components_, additional_attributes_,
       enabled_component_updates_,
-      base::BindOnce(&SequentialUpdateChecker::CheckNext,
+      base::BindOnce(&SequentialUpdateChecker::UpdateResultAvailable,
                      base::Unretained(this)));
-  VLOG(3) << "< Check(" << id_index << ")";
+  VLOG(3) << "< CheckNext()";
 }
 
-void SequentialUpdateChecker::CheckNext(
+void SequentialUpdateChecker::UpdateResultAvailable(
     const base::Optional<ProtocolParser::Results>& results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
-  VLOG(3) << "< CheckNext(" << error << ")";
+  VLOG(3) << "< UpdateResultAvailable(" << error << ")";
   DCHECK(thread_checker_.CalledOnValidThread());
 
   if (!error) {
@@ -175,9 +179,7 @@ void SequentialUpdateChecker::CheckNext(
       results_.list.push_back(result);
   }
 
-  ++curr_id_;
-
-  bool done = error || curr_id_ >= ids_checked_.size();
+  bool done = error || remaining_ids_.empty();
 
   if (done)
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -187,8 +189,8 @@ void SequentialUpdateChecker::CheckNext(
                      base::make_optional<ProtocolParser::Results>(results_),
                      error_category, error, retry_after_sec));
   else
-    Check(curr_id_);
-  VLOG(3) << "> CheckNext(" << error << ")";
+    CheckNext();
+  VLOG(3) << "> UpdateResultAvailable(" << error << ")";
 }
 
 }  // namespace
