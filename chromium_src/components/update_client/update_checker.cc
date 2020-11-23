@@ -102,7 +102,7 @@ class SequentialUpdateChecker : public UpdateChecker {
   bool enabled_component_updates_;
   UpdateCheckCallback update_check_callback_;
 
-  std::deque remaining_ids_;
+  std::deque<std::string> remaining_ids_;
 
   // The currently running update_checker_. We keep a smart pointer to it to
   // keep it alive while this particular sequential update check takes place.
